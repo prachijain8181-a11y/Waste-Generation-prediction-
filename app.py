@@ -5,8 +5,15 @@ import numpy as np
 app = Flask(__name__)
 
 # Load model
-model = pickle.load(open("model.pkl", "rb"))
-encoder = pickle.load(open("encoder.pkl", "rb"))
+model = None
+encoder = None
+
+def load_files():
+    global model, encoder
+    if model is None:
+        model = pickle.load(open("model.pkl", "rb"))
+    if encoder is None:
+        encoder = pickle.load(open("encoder.pkl", "rb"))
 
 @app.route('/')
 def home():
@@ -15,6 +22,8 @@ def home():
 @app.route('/predict', methods=['POST'])
 def predict():
     try:
+        load_files()   
+
         population = float(request.form['population'])
         household = float(request.form['household_size'])
         commercial = float(request.form['commercial_activity'])
@@ -38,7 +47,6 @@ def predict():
 
     except Exception as e:
         return str(e)
-
 import os
 
 if __name__ == "__main__":
